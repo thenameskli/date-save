@@ -21,3 +21,11 @@ chrome.runtime.onInstalled.addListener(function() {
   });
   
 });
+
+chrome.webNavigation.onHistoryStateUpdated.addListener(
+    function(details) {
+        chrome.tabs.executeScript(
+            details={file: "contentScript.js"}
+        );
+    }
+)

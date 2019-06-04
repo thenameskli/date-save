@@ -25,4 +25,11 @@ function get_info() {
           + "\nlocation = " + location);
 }
 
-setTimeout(get_info, 5000);
+var _url = window.location.href
+var regex = RegExp('facebook.com/events/[0-9]*/')
+
+// only run if at the correct URL
+if (regex.test(_url)) {
+    console.log("running get_info");
+    setTimeout(get_info, 5000);
+}
