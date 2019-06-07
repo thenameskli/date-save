@@ -4,7 +4,8 @@ function get_info() {
     var date = document.getElementsByClassName("_2ycp _5xhk")[0].getAttribute("content");
     
     // location is the second element with this class name.
-    var location = document.getElementsByClassName("_5xhp fsm fwn fcg")[1].innerHTML;
+    var street = document.getElementsByClassName("_5xhp fsm fwn fcg")[1].innerHTML;
+    var location_name = document.getElementsByClassName("_5xhk")[1].innerHTML; 
     var start_time; var end_time;
     
     // if end time
@@ -19,10 +20,27 @@ function get_info() {
         start_time = date;
         end_time = date;
     }
+    /*
     console.log("start = " + start_time 
           + "\nend = " + end_time
           + "\ntitle = " + event_title
-          + "\nlocation = " + location);
+          + "\nlocation = " + location_name
+          + "\n address  = " + street);
+    */
+
+    data = {
+        "start": start_time,
+        "end": end_time,
+        "title": event_title,
+        "location": location_name,
+        "address": street
+    }
+
+    chrome.runtime.sendMessage(data, function(response) {
+        console.log("Content Script message function response:")
+        console.log(response);
+      });
+
 }
 
 var _url = window.location.href

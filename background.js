@@ -4,6 +4,7 @@
 
 'use strict';
 
+
 chrome.runtime.onInstalled.addListener(function() {
   chrome.storage.sync.set({color: '#3aa757'}, function() {
     console.log("The color is green.");
@@ -29,3 +30,24 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(
         );
     }
 )
+
+function storeData(data) {
+  key = "calData"
+  alert("in storedata")
+  chrome.storage.local.set({key: data}, function(){
+      console.log("StoreData running");
+  })
+}
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log("in background.js")
+    alert(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+    sendResponse({"hello": "world"});
+    chrome.storage.sync.set({"calData": request}, function(){alert("set storage")})
+    console.log(chrome.storage);
+  });
+
+  
