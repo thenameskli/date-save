@@ -25,9 +25,6 @@ chrome.contextMenus.onClicked.addListener(
 function SendToCalendar(tab) {
     var maxLength = 1600;
     
-    // start building the URL
-    var url = "http://www.google.com/calendar/event?action=TEMPLATE";
-    
     // TODO: Fill in stubs dynamically from chrome.storage
     var address = "20 Monroe Ave NW, Grand Rapids, Michigan 49503"
     var title = "Clean Comedy Time Showcase at Dr Grins"
@@ -48,6 +45,7 @@ function SendToCalendar(tab) {
     end = end.replace(/:/g, "") + "Z";
         
     // build url
+    var url = "http://www.google.com/calendar/event?action=TEMPLATE";
     url += "&text=" + TrimURITo(title, maxLength - url.length);
     url += "&location=" + TrimURITo(address, maxLength - url.length);
     url += "&details=" + TrimURITo(tab.url + "\n", maxLength - url.length);
