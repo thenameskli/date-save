@@ -7,7 +7,13 @@ function get_info() {
     var street = document.getElementsByClassName("_5xhp fsm fwn fcg")[1].innerHTML;
     var location_name = document.getElementsByClassName("_5xhk")[1].innerHTML; 
     var start_time; var end_time;
+    var details = document.getElementsByClassName("_63ew")[0].innerHTML;
     
+    // remove span tags and replace break tags with new line characters
+    details = details.replace("<span>", "");
+    details = details.replace("</span>", "");
+    details = details.replace(/<br>/g, "\n")
+        
     // if end time
     if (date.includes("to")) {
         // split on " to "
@@ -32,7 +38,8 @@ function get_info() {
         "end": end_time,
         "title": event_title,
         "location": location_name,
-        "address": street
+        "address": street,
+        "details": details
     }
 
     chrome.runtime.sendMessage(data, function(response) {
