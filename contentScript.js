@@ -20,13 +20,12 @@ function get_info() {
         start_time = date;
         end_time = date;
     }
-    /*
+    
     console.log("start = " + start_time 
           + "\nend = " + end_time
           + "\ntitle = " + event_title
           + "\nlocation = " + location_name
           + "\n address  = " + street);
-    */
 
     data = {
         "start": start_time,
@@ -49,5 +48,5 @@ var regex = RegExp('facebook.com/events/[0-9]*/')
 // only run if at the correct URL
 if (regex.test(_url)) {
     console.log("running get_info");
-    setTimeout(get_info, 5000);
+    setTimeout(get_info, 500);
 }
