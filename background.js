@@ -28,34 +28,32 @@ function SendToCalendar(tab) {
     // start building the URL
     var url = "http://www.google.com/calendar/event?action=TEMPLATE";
     
-    // TODO: Fill in stubs dynamically from chrome.storage
-    var address = "20 Monroe Ave NW, Grand Rapids, Michigan 49503"
-    var title = "Clean Comedy Time Showcase at Dr Grins"
-    var start = "2019-06-12T17:00:00-07:00"
-    var end = "2019-06-12T18:30:00-07:00"
-    //--END TODO--
-    
-    
-    // times are formatted YYYYMMDDTHHMMssZ, where T and Z are unchanged...
-    // clip end of start and end
-    start = start.substring(0, 19);
-    end = end.substring(0, 19);
-    
-    // remove all dashes and colons
-    start = start.replace(/-/g, "");
-    start = start.replace(/:/g, "") + "Z";
-    end = end.replace(/-/g, "");
-    end = end.replace(/:/g, "") + "Z";
-        
-    // build url
-    url += "&text=" + TrimURITo(title, maxLength - url.length);
-    url += "&location=" + TrimURITo(address, maxLength - url.length);
-    url += "&details=" + TrimURITo(tab.url + "\n", maxLength - url.length);
-    url += "&dates=" + TrimURITo(start + "/" + end, maxLength - url.length);
-    
-    // Open the created url in a new tab
-	chrome.tabs.create({ "url": url}, function (tab) {});
-    
+    chrome.storage.sync.get("calData", function(response){
+      
+      var address = response.calData.address;
+      var title = response.calData.title;
+      var start = response.calData.start;
+      var end = response.calData.end;
+      // times are formatted YYYYMMDDTHHMMssZ, where T and Z are unchanged...
+      // clip end of start and end
+      start = start.substring(0, 19);
+      end = end.substring(0, 19);
+      
+      // remove all dashes and colons
+      start = start.replace(/-/g, "");
+      start = start.replace(/:/g, "") + "Z";
+      end = end.replace(/-/g, "");
+      end = end.replace(/:/g, "") + "Z";
+          
+      // build url
+      url += "&text=" + TrimURITo(title, maxLength - url.length);
+      url += "&location=" + TrimURITo(address, maxLength - url.length);
+      url += "&details=" + TrimURITo(tab.url + "\n", maxLength - url.length);
+      url += "&dates=" + TrimURITo(start + "/" + end, maxLength - url.length);
+      
+      // Open the created url in a new tab
+      chrome.tabs.create({ "url": url}, function (tab) {});
+    })
 }
 
 // Trim text so that its URI encoding fits into the length limit
@@ -106,23 +104,14 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(
     }
 )
 
-function storeData(data) {
-  key = "calData"
-  alert("in storedata")
-  chrome.storage.local.set({key: data}, function(){
-      console.log("StoreData running");
-  })
-}
-
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     console.log("in background.js")
-    //alert(sender.tab ?
-    //            "from a content script:" + sender.tab.url :
-    //            "from the extension");
+    alert(sender.tab ?
+               "from a content script:" + sender.tab.url :
+                "from the extension");
     sendResponse({"hello": "world"});
     chrome.storage.sync.set({"calData": request}, function(){alert("set storage")})
-    //console.log(chrome.storage);
   });
 
   
