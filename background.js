@@ -26,6 +26,10 @@ function SendToCalendar(tab) {
     var maxLength = 1600;
     
     // TODO: Fill in stubs dynamically from chrome.storage
+    chrome.storage.local.get(['calData'], function(result) {
+        console.log("hello");
+    });
+    
     var address = "20 Monroe Ave NW, Grand Rapids, Michigan 49503"
     var title = "Clean Comedy Time Showcase at Dr Grins"
     var start = "2019-06-12T17:00:00-07:00"
@@ -119,7 +123,7 @@ chrome.runtime.onMessage.addListener(
     //            "from a content script:" + sender.tab.url :
     //            "from the extension");
     sendResponse({"hello": "world"});
-    chrome.storage.sync.set({"calData": request}, function(){alert("set storage")})
+    chrome.storage.sync.set({"calData": request}, function(){})
     //console.log(chrome.storage);
   });
 
