@@ -55,5 +55,5 @@ var regex = RegExp('facebook.com/events/[0-9]*/')
 // only run if at the correct URL
 if (regex.test(_url)) {
     console.log("running get_info");
-    setTimeout(get_info, 500);
+    get_info();
 }

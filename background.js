@@ -18,7 +18,12 @@ chrome.contextMenus.onClicked.addListener(
         
         // only run if at the correct URL
         if (regex.test(tab.url)) {
-            SendToCalendar(tab);
+            // run scraping script, then call SendToCalendar
+            chrome.tabs.executeScript(
+                null, // tabID
+                {file: "contentScript.js"}, // details of script
+                function(result){SendToCalendar(tab)} // callback, send to calendar!
+            )
         }
     })
 
@@ -33,7 +38,15 @@ function SendToCalendar(tab) {
       var address = response.calData.address;
       var title = response.calData.title;
       var details = response.calData.details;
-      
+        
+      // remove emojis from details
+      var ranges = [
+        '\ud83c[\udf00-\udfff]', // U+1F300 to U+1F3FF
+        '\ud83d[\udc00-\ude4f]', // U+1F400 to U+1F64F
+        '\ud83d[\ude80-\udeff]'  // U+1F680 to U+1F6FF
+      ];
+      details = details.replace(new RegExp("(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff])[\ufe0e\ufe0f]?(?:[\u0300-\u036f\ufe20-\ufe23\u20d0-\u20f0]|\ud83c[\udffb-\udfff])?(?:\u200d(?:[^\ud800-\udfff]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff])[\ufe0e\ufe0f]?(?:[\u0300-\u036f\ufe20-\ufe23\u20d0-\u20f0]|\ud83c[\udffb-\udfff])?)*", 'g'), '');
+        
       // original time-date format: YYYY-MM-DDTHH:MM:ss-ZZ:ZZ
       var start = response.calData.start;
       var end = response.calData.end;
@@ -116,9 +129,9 @@ chrome.runtime.onInstalled.addListener(function() {
 
 chrome.webNavigation.onHistoryStateUpdated.addListener(
     function(details) {
-        chrome.tabs.executeScript(
+        /*chrome.tabs.executeScript(
             details={file: "contentScript.js"}
-        );
+        );*/
     }
 )
 
