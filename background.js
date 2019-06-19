@@ -57,6 +57,7 @@ function SendToCalendar(tab) {
       var ss_and_ZZ = start_time.split(':')[2];
       var ZZ = ss_and_ZZ.substring(2);
       var start_hour_est = parseInt(start_hour) - parseInt(ZZ);
+        
       start = start.replace("T" + start_hour, "T" + start_hour_est);
       
       // change end-time to EST
@@ -80,7 +81,7 @@ function SendToCalendar(tab) {
       url += "&text=" + TrimURITo(title, maxLength - url.length);
       url += "&location=" + TrimURITo(address, maxLength - url.length);
       url += "&details=" + TrimURITo("Facebook Event: " + tab.url + "\n\nDetails:\n" + details, maxLength - url.length);
-      url += "&dates=" + TrimURITo(start + "/" + end, maxLength - url.length);
+      url += "&dates=" + start + "/" + end;
       
       // Open the created url in a new tab
       chrome.tabs.create({ "url": url}, function (tab) {});
