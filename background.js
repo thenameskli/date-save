@@ -27,6 +27,10 @@ chrome.contextMenus.onClicked.addListener(
         }
     })
 
+function pad(n) {
+	return n<10 ? '0'+n : n
+}
+
 function SendToCalendar(tab) {
     var maxLength = 2000;
             
@@ -45,46 +49,28 @@ function SendToCalendar(tab) {
         '\ud83d[\udc00-\ude4f]', // U+1F400 to U+1F64F
         '\ud83d[\ude80-\udeff]'  // U+1F680 to U+1F6FF
       ];
-      details = details.replace(new RegExp("(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff])[\ufe0e\ufe0f]?(?:[\u0300-\u036f\ufe20-\ufe23\u20d0-\u20f0]|\ud83c[\udffb-\udfff])?(?:\u200d(?:[^\ud800-\udfff]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff])[\ufe0e\ufe0f]?(?:[\u0300-\u036f\ufe20-\ufe23\u20d0-\u20f0]|\ud83c[\udffb-\udfff])?)*", 'g'), '');
+      //details = details.replace(new RegExp("(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff])[\ufe0e\ufe0f]?(?:[\u0300-\u036f\ufe20-\ufe23\u20d0-\u20f0]|\ud83c[\udffb-\udfff])?(?:\u200d(?:[^\ud800-\udfff]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff])[\ufe0e\ufe0f]?(?:[\u0300-\u036f\ufe20-\ufe23\u20d0-\u20f0]|\ud83c[\udffb-\udfff])?)*", 'g'), '');
         
       // original time-date format: YYYY-MM-DDTHH:MM:ss-ZZ:ZZ
-      var start = response.calData.start;
-      var end = response.calData.end;
-      
-      // change start-time to EST
-      var start_time = start.split('T')[1];
-      var start_hour = start_time.split(':')[0];
-      var ss_and_ZZ = start_time.split(':')[2];
-      var ZZ = ss_and_ZZ.substring(2);
-      var start_hour_est = parseInt(start_hour) - parseInt(ZZ);
+      var start = new Date(response.calData.start);
+      var end = new Date(response.calData.end);
+    
+      // times must be formatted YYYYMMDDTHHMMssZ, UTC
+      var start_formatted = String(start.getUTCFullYear()) + pad(start.getUTCMonth()) + pad(start.getUTCDate()) 
+            + 'T' + pad(start.getUTCHours()) + pad(start.getUTCMinutes()) + pad(start.getUTCSeconds()) + 'Z';
+      var end_formatted = String(end.getUTCFullYear()) + pad(end.getUTCMonth()) + pad(end.getUTCDate()) 
+            + 'T' + pad(end.getUTCHours()) + pad(end.getUTCMinutes()) + pad(end.getUTCSeconds()) + 'Z';
         
-      start = start.replace("T" + start_hour, "T" + start_hour_est);
-      
-      // change end-time to EST
-      var end_time = end.split('T')[1];
-      var end_hour = end_time.split(':')[0];
-      var end_hour_est = parseInt(end_hour) - parseInt(ZZ);
-      end = end.replace("T" + end_hour, "T" + end_hour_est);
-            
-      // times must be formatted YYYYMMDDTHHMMssZ, where T and Z are unchanged...
-      // clip end of start and end
-      start = start.substring(0, 19);
-      end = end.substring(0, 19);
-      
-      // remove all dashes and colons, add Z for time-zone
-      start = start.replace(/-/g, "");
-      start = start.replace(/:/g, "") + "Z";
-      end = end.replace(/-/g, "");
-      end = end.replace(/:/g, "") + "Z";
-          
       // build url
       url += "&text=" + TrimURITo(title, maxLength - url.length);
       url += "&location=" + TrimURITo(address, maxLength - url.length);
       url += "&details=" + TrimURITo("Facebook Event: " + tab.url + "\n\nDetails:\n" + details, maxLength - url.length);
-      url += "&dates=" + start + "/" + end;
+      
+      // dont trim dates portion
+      url += "&dates=" + start_formatted + "/" + end_formatted;
       
       // Open the created url in a new tab
-      chrome.tabs.create({ "url": url}, function (tab) {});
+      chrome.tabs.create({"url": url}, function (tab) {});
     })
 }
 
